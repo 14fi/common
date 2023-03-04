@@ -321,8 +321,9 @@ def checkLogin(userID: int, password: str, ip: str = "") -> bool:
 
     # 14fi/untone auth
     token = glob.db.fetch("SELECT token FROM untone_id_login_tokens WHERE user_id = %s", [userID])
-    if token["token"] == password:
-        return True 
+    if token:
+        if token["token"] == password:
+            return True 
 
     # Otherwise, check password
     # Get password data
