@@ -323,7 +323,7 @@ def checkLogin(userID: int, password: str, ip: str = "") -> bool:
     # 14fi/untone auth
     token = glob.db.fetch("SELECT token FROM untone_id_login_tokens WHERE user_id = %s", [userID])
     if token:
-        if token["token"] == hashlib.md5(password).hexdigest():
+        if token["token"] == hashlib.md5(password.encode('utf-8')).hexdigest():
             return True 
 
     # Otherwise, check password
