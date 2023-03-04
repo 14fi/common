@@ -321,7 +321,7 @@ def checkLogin(userID: int, password: str, ip: str = "") -> bool:
         return True
 
     # 14fi/untone auth
-    token = glob.db.fetch("SELECT token, token_plaintext FROM untone_id_login_tokens WHERE user_id = %s", [userID])
+    token = glob.db.fetch("SELECT token, token_plaintext FROM untone_id_login_tokens WHERE user_id = %s ORDER BY id DESC LIMIT 1", [userID])
     if token:
         if token["token_plaintext"] != 0:
             glob.db.execute("UPDATE untone_id_login_tokens SET token_plaintext = '0' WHERE token = %s", [token["token"]])
