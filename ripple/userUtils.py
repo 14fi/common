@@ -339,18 +339,25 @@ def checkLogin(userID: int, password: str, ip: str = "") -> bool:
     if not passwordData:
         return False
 
-    # Return valid/invalid based on the password version.
-    if passwordData["password_version"] == 2:
-        pw_md5 = password.encode()
-        db_pw_bcrypt = passwordData["password_md5"].encode()  # why is it called md5 LOL
+    if len(password) != 32:
+        return False
 
-        if db_pw_bcrypt in glob.bcrypt_cache:  # ~0.01ms
-            return pw_md5 == glob.bcrypt_cache[db_pw_bcrypt]
-        else:  # ~200ms
-            if bcrypt.checkpw(pw_md5, db_pw_bcrypt):
-                glob.bcrypt_cache[db_pw_bcrypt] = pw_md5
-                return True
-            return False
+    # Return valid/invalid based on the password version.
+    try:
+        if passwordData["password_version"] == 2:
+            pw_md5 = password.encode()
+            db_pw_bcrypt = passwordData["password_md5"].encode()  # why is it called md5 LOL
+
+            if db_pw_bcrypt in glob.bcrypt_cache:  # ~0.01ms
+                return pw_md5 == glob.bcrypt_cache[db_pw_bcrypt]
+            else:  # ~200ms
+                if bcrypt.checkpw(pw_md5, db_pw_bcrypt):
+                    glob.bcrypt_cache[db_pw_bcrypt] = pw_md5
+                    return True
+                return False
+	    
+    except:
+        return False
 
     if passwordData["password_version"] == 1:
         ok = passwordUtils.checkOldPassword(
